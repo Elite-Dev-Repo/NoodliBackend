@@ -11,7 +11,7 @@ class Sessions(models.Model):
     class Meta:
         constraints = [
             models.UniqueConstraint(
-                fields = ["name", "user"],
+                fields = ["name", "date", 'user'],
                 name = "unique_user_app_record"
             )
         ]

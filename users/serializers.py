@@ -83,3 +83,13 @@ class UserProfileSerializer(serializers.ModelSerializer):
             'date_joined',
             'sessions',
         ]
+
+
+
+class RequestRecoveryEmailSerializer(serializers.Serializer):
+    email = serializers.EmailField(min_length=8)
+
+class ResetPasswordSerializer(serializers.Serializer):
+    new_password = serializers.CharField(min_length=8)
+    uidb64 = serializers.CharField(min_length=2)
+    token = serializers.CharField(min_length=10)
