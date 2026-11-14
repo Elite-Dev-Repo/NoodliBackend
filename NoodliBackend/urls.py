@@ -27,6 +27,7 @@ urlpatterns = [
     path('api/', include('users.urls')),
     path('api/sessions/', include('tracked_sessions.urls')),
     path('api/goals/', include('goals.urls')),
+    path('api/leaderboard/', include('leaderboard.urls')),
 
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),

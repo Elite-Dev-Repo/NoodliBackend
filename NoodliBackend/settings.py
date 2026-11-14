@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     'users',
     'tracked_sessions',
     'goals',
+    'leaderboard',
 ]
 
 MIDDLEWARE = [
