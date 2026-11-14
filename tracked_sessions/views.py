@@ -4,6 +4,8 @@ from .serializers import SessionsSerializer
 from django.db import transaction
 from django.db.models import F
 
+from goals.utils import evaluate_goals_for_user
+
 
 class SessionListCreateView(generics.ListCreateAPIView):
     serializer_class = SessionsSerializer
@@ -40,6 +42,10 @@ class SessionListCreateView(generics.ListCreateAPIView):
                     Sessions.objects.filter(pk=obj.pk).update(
                         seconds_used=F('seconds_used') + count
                     )
+
+        # Goals are evaluated after tracking data is written so emails reflect
+        # the latest usage totals.
+        evaluate_goals_for_user(self.request.user)
 
 
 class SessionDetailView(generics.RetrieveUpdateDestroyAPIView):
