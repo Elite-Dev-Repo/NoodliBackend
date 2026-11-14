@@ -5,6 +5,7 @@ from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
 from allauth.socialaccount.providers.oauth2.client import OAuth2Client
 from rest_framework import generics, permissions, views, status
 from rest_framework.response import Response
+from rest_framework_simplejwt.tokens import RefreshToken
 from django.conf import settings
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.core.mail import send_mail
@@ -12,7 +13,7 @@ from django.utils.encoding import smart_str, force_bytes
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 
 from .models import User
-from .serializers import RegisterSerializer, UserProfileSerializer, RequestRecoveryEmailSerializer,ResetPasswordSerializer
+from .serializers import RegisterSerializer, UserProfileSerializer, UserSerializer, RequestRecoveryEmailSerializer,ResetPasswordSerializer
 
 logger = logging.getLogger(__name__)
 
@@ -33,6 +34,22 @@ class GoogleLogin(SocialLoginView):
 class RegisterView(generics.CreateAPIView):
     serializer_class = RegisterSerializer
     permission_classes = [permissions.AllowAny]
+    authentication_classes = []
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()
+
+        refresh = RefreshToken.for_user(user)
+        return Response(
+            data={
+                'user': UserSerializer(user).data,
+                'access': str(refresh.access_token),
+                'refresh': str(refresh),
+            },
+            status=status.HTTP_201_CREATED,
+        )
 
 
 class UserProfileView(generics.RetrieveUpdateAPIView):
